@@ -361,6 +361,54 @@ ul {
   background: #0f2a1f;
 }
 
+/* ===== Statistics ===== */
+.statistics {
+  background: var(--color-off-white);
+}
+
+.statistics-title {
+  margin-bottom: 1.5rem;
+  color: var(--color-forest-deep);
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.statistics-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.statistics-card {
+  flex: 1 1 220px;
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-white);
+  box-shadow: 0 4px 16px var(--color-shadow);
+  text-align: center;
+}
+
+.statistics-value {
+  color: var(--color-forest);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.statistics-label {
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 520px) {
+  .statistics-grid {
+    flex-direction: column;
+  }
+}
+
 @media (min-width: 768px) {
   .hero-title {
     font-size: 3.2rem;
