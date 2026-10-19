@@ -3,9 +3,7 @@ import Logo from "./Logo";
 
 const links = [
   { name: "Home", href: "#home" },
-  { name: "Explore", href: "#features" },
-  { name: "Research", href: "#features" },
-  { name: "Policies", href: "#features" },
+  { name: "Features", href: "#features" },
   { name: "About", href: "#about" },
 ];
 
