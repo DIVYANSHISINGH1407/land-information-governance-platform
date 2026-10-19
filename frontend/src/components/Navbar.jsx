@@ -1,42 +1,61 @@
 import { useState } from "react";
 import Logo from "./Logo";
 
+const links = [
+  { name: "Home", href: "#home" },
+  { name: "Explore", href: "#features" },
+  { name: "Research", href: "#features" },
+  { name: "Policies", href: "#features" },
+  { name: "About", href: "#about" },
+];
+
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  function closeMenu() {
-    setMenuOpen(false);
-  }
 
   return (
     <header className="navbar">
       <div className="container navbar-inner">
         <Logo />
 
-        <nav className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#features">Features</a>
-          <a href="#about">About</a>
-        </nav>
+        <div className="nav-right">
+          <nav className="nav-links">
+            {links.map((link) => (
+              <a key={link.name} href={link.href}>
+                {link.name}
+              </a>
+            ))}
+          </nav>
 
-        <button
-          type="button"
-          className="menu-btn"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          {menuOpen ? "✕" : "☰"}
-        </button>
+          <a href="#about" className="signup-btn">
+            Sign Up
+          </a>
+
+          <button
+            type="button"
+            className="menu-btn"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        </div>
       </div>
 
       <div className={menuOpen ? "container mobile-menu open" : "container mobile-menu"}>
-        <a href="#home" onClick={closeMenu}>
-          Home
-        </a>
-        <a href="#features" onClick={closeMenu}>
-          Features
-        </a>
-        <a href="#about" onClick={closeMenu}>
-          About
+        {links.map((link) => (
+          <a
+            key={link.name}
+            href={link.href}
+            onClick={() => setMenuOpen(false)}
+          >
+            {link.name}
+          </a>
+        ))}
+        <a
+          href="#about"
+          className="signup-btn mobile-signup"
+          onClick={() => setMenuOpen(false)}
+        >
+          Sign Up
         </a>
       </div>
     </header>
