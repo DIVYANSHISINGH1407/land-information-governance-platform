@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./app.css";
+import "../signup.css";
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -10,14 +10,18 @@ function Signup() {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   function handleChange(e) {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     setError("");
+    setSuccess("");
   }
 
   function handleSubmit(e) {
@@ -44,9 +48,9 @@ function Signup() {
     }
 
     setError("");
+    setSuccess("Your form is valid! Backend registration is not connected yet.");
 
-    // Connect your backend registration API here.
-    console.log("Registration form is valid:", {
+    console.log("Signup details:", {
       fullName: formData.fullName,
       email: formData.email,
     });
@@ -54,7 +58,7 @@ function Signup() {
 
   return (
     <div className="signup-page">
-      {/* Navigation */}
+      {/* Navigation Bar */}
       <nav className="signup-navbar">
         <a href="/" className="signup-brand">
           <span className="brand-icon">
@@ -70,6 +74,7 @@ function Signup() {
                 stroke="currentColor"
                 strokeWidth="1.5"
               />
+
               <ellipse
                 cx="20"
                 cy="20"
@@ -78,6 +83,7 @@ function Signup() {
                 stroke="currentColor"
                 strokeWidth="1.2"
               />
+
               <ellipse
                 cx="20"
                 cy="20"
@@ -86,11 +92,13 @@ function Signup() {
                 stroke="currentColor"
                 strokeWidth="1.2"
               />
+
               <path
                 d="M3 20H37M20 3V37"
                 stroke="currentColor"
                 strokeWidth="1"
               />
+
               <circle cx="20" cy="20" r="3" fill="currentColor" />
             </svg>
           </span>
@@ -105,7 +113,7 @@ function Signup() {
         </a>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Signup Section */}
       <main className="signup-main">
         <section className="signup-card">
           <div className="signup-heading">
@@ -119,6 +127,7 @@ function Signup() {
             </p>
           </div>
 
+          {/* Signup Form */}
           <form onSubmit={handleSubmit} className="signup-form">
             <div className="form-group">
               <label htmlFor="fullName">Full Name</label>
@@ -194,16 +203,23 @@ function Signup() {
               </p>
             )}
 
+            {success && (
+              <p className="signup-success" role="status">
+                {success}
+              </p>
+            )}
+
             <button type="submit" className="create-account-btn">
               Create Account
               <span aria-hidden="true">→</span>
             </button>
           </form>
 
+          {/* Sign In Section */}
           <div className="signup-divider">
-            <span />
+            <span></span>
             <p>ALREADY A MEMBER?</p>
-            <span />
+            <span></span>
           </div>
 
           <p className="signin-text">
@@ -218,7 +234,7 @@ function Signup() {
         </section>
 
         <div className="signup-bottom-text">
-          <span className="bottom-dot" />
+          <span className="bottom-dot"></span>
           Bringing land information together, one step at a time.
         </div>
       </main>

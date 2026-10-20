@@ -16,6 +16,7 @@ function Navbar() {
         <Logo />
 
         <div className="nav-right">
+          {/* Desktop Navigation Links */}
           <nav className="nav-links">
             {links.map((link) => (
               <a key={link.name} href={link.href}>
@@ -24,21 +25,37 @@ function Navbar() {
             ))}
           </nav>
 
+          {/* Login Link */}
+          <a href="/login" className="login-btn">
+            Login
+          </a>
+
+          {/* Sign Up Button */}
           <a href="/signup" className="signup-btn">
             Sign Up
           </a>
 
+          {/* Mobile Menu Button */}
           <button
             type="button"
             className="menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? "✕" : "☰"}
           </button>
         </div>
       </div>
 
-      <div className={menuOpen ? "container mobile-menu open" : "container mobile-menu"}>
+      {/* Mobile Menu */}
+      <div
+        className={
+          menuOpen
+            ? "container mobile-menu open"
+            : "container mobile-menu"
+        }
+      >
         {links.map((link) => (
           <a
             key={link.name}
@@ -48,6 +65,17 @@ function Navbar() {
             {link.name}
           </a>
         ))}
+
+        {/* Mobile Login Link */}
+        <a
+          href="/login"
+          className="login-btn"
+          onClick={() => setMenuOpen(false)}
+        >
+          Login
+        </a>
+
+        {/* Mobile Sign Up Button */}
         <a
           href="/signup"
           className="signup-btn mobile-signup"
