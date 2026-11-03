@@ -18,7 +18,6 @@ export default function SiteFooter() {
       </div>
       <div className="footer-bottom">
         <span>© 2026 BhumiSetu</span>
-        <span>Academic project · Not an official government portal</span>
       </div>
     </footer>
   );

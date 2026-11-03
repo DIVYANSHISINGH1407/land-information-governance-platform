@@ -284,17 +284,6 @@ export default function ExplorePage() {
                 </article>
               </section>
 
-              <section className="insight-band">
-                <span>✳</span>
-                <div>
-                  <b>What this view tells you</b>
-                  <p>
-                    {landTypes[0].percent}% of the mapped area is classified as{" "}
-                    {landTypes[0].name.toLowerCase()}. Ownership is displayed separately from land
-                    use.
-                  </p>
-                </div>
-              </section>
             </>
           )}
 
@@ -417,10 +406,6 @@ export default function ExplorePage() {
         </>
       )}
 
-      <p className="data-disclaimer">
-        Demo data for interface demonstration only. Replace with verified statistics and official
-        sources before publication.
-      </p>
     </main>
   );
 }

@@ -100,9 +100,6 @@ export default function AboutPage() {
           </p>
         </article>
       </section>
-      <p className="about-disclaimer">
-        BhumiSetu is an academic project concept and is not an official government portal.
-      </p>
     </main>
   );
 }

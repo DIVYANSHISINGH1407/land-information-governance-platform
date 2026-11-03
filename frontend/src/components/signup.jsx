@@ -189,7 +189,7 @@ function Signup() {
 
       {/* Footer */}
       <footer className="signup-footer">
-        © 2026 BhumiSetu. Academic project — not an official government portal.
+        © 2026 BhumiSetu.
       </footer>
     </div>
   );

@@ -21,7 +21,7 @@ function Footer() {
       </div>
 
       <div className="container footer-bottom">
-        <p>© 2026 BhumiSetu. Academic project — not an official government portal.</p>
+        <p>© 2026 BhumiSetu.</p>
       </div>
     </footer>
   );
