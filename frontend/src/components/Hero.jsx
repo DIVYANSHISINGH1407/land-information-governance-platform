@@ -2,7 +2,7 @@ function Hero() {
   return (
     <section id="home" className="hero">
       <div className="container hero-inner">
-        <p className="hero-brand">BhoomiSetu</p>
+        <p className="hero-brand">BhumiSetu</p>
 
         <h1 className="hero-title">Land Information &amp; Governance Platform</h1>
 

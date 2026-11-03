@@ -53,8 +53,8 @@ function Features() {
           <p className="section-eyebrow">Platform features</p>
           <h2 className="section-title">Built for clearer land insight</h2>
           <p className="section-desc">
-            Three focused spaces to explore land information, patterns and related
-            knowledge — without clutter or noise.
+            Three focused spaces to explore land information, patterns and related knowledge —
+            without clutter or noise.
           </p>
         </div>
 

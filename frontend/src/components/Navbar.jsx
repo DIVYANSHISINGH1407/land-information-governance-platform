@@ -28,11 +28,7 @@ function Navbar() {
             Sign Up
           </a>
 
-          <button
-            type="button"
-            className="menu-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
+          <button type="button" className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? "✕" : "☰"}
           </button>
         </div>
@@ -40,19 +36,11 @@ function Navbar() {
 
       <div className={menuOpen ? "container mobile-menu open" : "container mobile-menu"}>
         {links.map((link) => (
-          <a
-            key={link.name}
-            href={link.href}
-            onClick={() => setMenuOpen(false)}
-          >
+          <a key={link.name} href={link.href} onClick={() => setMenuOpen(false)}>
             {link.name}
           </a>
         ))}
-        <a
-          href="/signup"
-          className="signup-btn mobile-signup"
-          onClick={() => setMenuOpen(false)}
-        >
+        <a href="/signup" className="signup-btn mobile-signup" onClick={() => setMenuOpen(false)}>
           Sign Up
         </a>
       </div>

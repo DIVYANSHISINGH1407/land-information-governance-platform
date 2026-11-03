@@ -9,7 +9,7 @@ function Statistics() {
   return (
     <section className="section statistics">
       <div className="container">
-        <h2 className="statistics-title">BhoomiSetu at a glance</h2>
+        <h2 className="statistics-title">BhumiSetu at a glance</h2>
         <div className="statistics-grid">
           {statistics.map((statistic) => (
             <div className="statistics-card" key={statistic.label}>

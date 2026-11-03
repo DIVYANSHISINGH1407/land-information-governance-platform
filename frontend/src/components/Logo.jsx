@@ -1,46 +1,36 @@
+import { Link } from "react-router-dom";
+
 function Logo({ light }) {
   const className = light ? "logo logo-light" : "logo";
 
   return (
-    <a href="#home" className={className}>
+    <Link to="/" className={className}>
       <span className="logo-mark">
-        {/* Same globe + leaf logo as before */}
         <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle
-            cx="20"
-            cy="20"
-            r="19"
-            fill={light ? "rgba(255,255,255,0.18)" : "#1b4332"}
-          />
+          <circle cx="20" cy="20" r="16" stroke={light ? "#d7e1cd" : "#315d3b"} strokeWidth="1.7" />
           <ellipse
             cx="20"
             cy="20"
-            rx="11"
-            ry="18"
-            stroke="#d8e5d8"
+            rx="7"
+            ry="16"
+            stroke={light ? "#b8c8ad" : "#789476"}
             strokeWidth="1.2"
-            opacity="0.55"
-          />
-          <ellipse
-            cx="20"
-            cy="20"
-            rx="18"
-            ry="7.5"
-            stroke="#d8e5d8"
-            strokeWidth="1.2"
-            opacity="0.55"
           />
           <path
-            d="M20 9c-1.6 3.8-5 6.4-7.5 7.6 2.5 1 5 3.8 6.3 8.9 1.3-5.1 3.8-7.9 6.3-8.9C22.6 15.4 20.8 12.8 20 9z"
-            fill="#95b89a"
+            d="M5 20h30M8 13h24M8 27h24"
+            stroke={light ? "#b8c8ad" : "#789476"}
+            strokeWidth="1.2"
           />
-          <circle cx="20" cy="20" r="2.2" fill="#f7f3eb" />
+          <path
+            d="M20 11c-2 3-4 4-6 5 2 1 4 3 5 6 1-3 3-5 6-6-3-1-4-3-5-5Z"
+            fill={light ? "#d7e1cd" : "#789476"}
+          />
         </svg>
       </span>
       <span className="logo-text">
-        Bhoomi<span>Setu</span>
+        Bhumi<span>Setu</span>
       </span>
-    </a>
+    </Link>
   );
 }
 

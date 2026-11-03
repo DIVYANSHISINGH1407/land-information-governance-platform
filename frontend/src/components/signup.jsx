@@ -58,45 +58,17 @@ function Signup() {
       <nav className="signup-navbar">
         <a href="/" className="signup-brand">
           <span className="brand-icon">
-            <svg
-              viewBox="0 0 40 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="20"
-                cy="20"
-                r="17"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <ellipse
-                cx="20"
-                cy="20"
-                rx="8"
-                ry="17"
-                stroke="currentColor"
-                strokeWidth="1.2"
-              />
-              <ellipse
-                cx="20"
-                cy="20"
-                rx="17"
-                ry="7"
-                stroke="currentColor"
-                strokeWidth="1.2"
-              />
-              <path
-                d="M3 20H37M20 3V37"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="17" stroke="currentColor" strokeWidth="1.5" />
+              <ellipse cx="20" cy="20" rx="8" ry="17" stroke="currentColor" strokeWidth="1.2" />
+              <ellipse cx="20" cy="20" rx="17" ry="7" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M3 20H37M20 3V37" stroke="currentColor" strokeWidth="1" />
               <circle cx="20" cy="20" r="3" fill="currentColor" />
             </svg>
           </span>
 
           <span className="brand-name">
-            Bhoomi<span>Setu</span>
+            Bhumi<span>Setu</span>
           </span>
         </a>
 
@@ -109,14 +81,11 @@ function Signup() {
       <main className="signup-main">
         <section className="signup-card">
           <div className="signup-heading">
-            <span className="signup-eyebrow">JOIN BHOOMISETU</span>
+            <span className="signup-eyebrow">JOIN BHUMISETU</span>
 
             <h1>Create Your Account</h1>
 
-            <p>
-              Your gateway to better land information,
-              research, and governance insights.
-            </p>
+            <p>Your gateway to better land information, research, and governance insights.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="signup-form">
@@ -165,15 +134,11 @@ function Signup() {
                 required
               />
 
-              <span className="input-hint">
-                Use at least 8 characters.
-              </span>
+              <span className="input-hint">Use at least 8 characters.</span>
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">
-                Confirm Password
-              </label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
 
               <input
                 id="confirmPassword"
@@ -207,13 +172,12 @@ function Signup() {
           </div>
 
           <p className="signin-text">
-            Already have an account?{" "}
-            <a href="/login">Sign in</a>
+            Already have an account? <a href="/login">Sign in</a>
           </p>
 
           <p className="signup-disclaimer">
-            By creating an account, you agree to use the platform
-            responsibly for educational and research purposes.
+            By creating an account, you agree to use the platform responsibly for educational and
+            research purposes.
           </p>
         </section>
 
@@ -225,8 +189,7 @@ function Signup() {
 
       {/* Footer */}
       <footer className="signup-footer">
-        © 2026 BhoomiSetu. Academic project — not an official
-        government portal.
+        © 2026 BhumiSetu. Academic project — not an official government portal.
       </footer>
     </div>
   );

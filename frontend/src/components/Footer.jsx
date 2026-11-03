@@ -7,8 +7,8 @@ function Footer() {
         <div className="footer-brand">
           <Logo light={true} />
           <p>
-            BhoomiSetu brings land information, land-use patterns, policies and
-            research together in one simple platform.
+            BhumiSetu brings land information, land-use patterns, policies and research together in
+            one simple platform.
           </p>
         </div>
 
@@ -21,7 +21,7 @@ function Footer() {
       </div>
 
       <div className="container footer-bottom">
-        <p>© 2026 BhoomiSetu. Academic project — not an official government portal.</p>
+        <p>© 2026 BhumiSetu. Academic project — not an official government portal.</p>
       </div>
     </footer>
   );

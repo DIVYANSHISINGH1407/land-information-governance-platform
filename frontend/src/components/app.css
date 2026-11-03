@@ -75,12 +75,7 @@
   justify-content: center;
   padding: 48px 20px 36px;
   background:
-    radial-gradient(
-      ellipse at 50% 0%,
-      rgba(220, 204, 170, 0.2),
-      transparent 65%
-    ),
-    #f5f0e7;
+    radial-gradient(ellipse at 50% 0%, rgba(220, 204, 170, 0.2), transparent 65%), #f5f0e7;
 }
 
 /* Signup card */
