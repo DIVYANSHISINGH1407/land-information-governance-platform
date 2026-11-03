@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import ExplorePage from "./pages/ExplorePage";
 import ResearchPage from "./pages/ResearchPage";
 import PoliciesPage from "./pages/PoliciesPage";
+import GovernmentPolicies from "./pages/GovernmentPolicies";
 import AboutPage from "./pages/AboutPage";
 import AuthPage from "./pages/AuthPage";
 import RoleSelectionPage from "./pages/RoleSelectionPage";
@@ -53,6 +54,14 @@ export default function App() {
           element={
             <SiteLayout>
               <PoliciesPage />
+            </SiteLayout>
+          }
+        />
+        <Route
+          path="/government/policies"
+          element={
+            <SiteLayout>
+              <GovernmentPolicies />
             </SiteLayout>
           }
         />

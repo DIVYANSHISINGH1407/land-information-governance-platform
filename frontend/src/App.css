@@ -1369,6 +1369,353 @@ a {
   font-size: 8px;
   line-height: 1.6;
 }
+/* Government and Public Policies Separation Styles */
+.gov-official-notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  border-radius: 6px;
+  background: #eef6f0;
+  border: 1px solid #cce5d3;
+  color: #204e30;
+  font-size: 10px;
+}
+.gov-official-notice-banner a {
+  color: #174026;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.gov-portal-hero {
+  background: #edf3ec;
+  border: 1px solid #dce8dc;
+}
+.gov-hero-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.gov-session-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #d4ded4;
+  box-shadow: 0 2px 8px rgba(20, 45, 30, 0.05);
+}
+.gov-status-dot {
+  color: #2b7a42;
+  font-size: 14px;
+}
+.gov-session-card b {
+  display: block;
+  font-size: 10px;
+  color: #25442e;
+}
+.gov-session-card small {
+  display: block;
+  font-size: 8px;
+  color: #6a7c6f;
+}
+.gov-signout-btn {
+  padding: 4px 8px;
+  border: 1px solid #e0e5de;
+  border-radius: 4px;
+  background: #fbfcfb;
+  color: #8c2a2a;
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.gov-signout-btn:hover {
+  background: #fdf2f2;
+  border-color: #fcc;
+}
+
+.gov-footer-note {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #f9fbf9;
+  border: 1px solid #e0e8e0;
+  font-size: 9.5px;
+  color: #4b6352;
+}
+.gov-footer-note code {
+  background: #eaf1ea;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+.gov-footer-note a {
+  color: #225732;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Access Restricted View */
+.access-restricted-box {
+  max-width: 580px;
+  margin: 30px auto;
+  padding: 34px 28px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e2e8df;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(18, 38, 25, 0.06);
+}
+.restricted-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #fdf2f2;
+  border: 1px solid #fed7d7;
+  color: #b91c1c;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+}
+.access-restricted-box h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 19px;
+  color: #2c4232;
+  margin: 0 0 10px;
+}
+.access-restricted-box p {
+  color: #637367;
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+.restricted-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Development testing banner */
+.dev-testing-card {
+  margin-top: 26px;
+  padding: 16px;
+  border-radius: 6px;
+  background: #fffef5;
+  border: 1px dashed #d4b868;
+  text-align: left;
+}
+.dev-tag {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #8a6a12;
+  background: #faedd0;
+  padding: 3px 7px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+.dev-testing-card p {
+  font-size: 9px;
+  color: #695e3c;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.dev-login-btn {
+  padding: 7px 14px;
+  border-radius: 4px;
+  border: 1px solid #33613d;
+  background: #33613d;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.dev-login-btn:hover {
+  background: #254a2e;
+}
+
+/* Management Action Controls */
+.policy-heading-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.add-policy-btn {
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 0;
+  background: #2d5a37;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.add-policy-btn:hover {
+  background: #214429;
+}
+
+.policy-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex: none;
+}
+.policy-admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.policy-action-btn {
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+.policy-action-btn.edit-btn {
+  background: #f1f6f1;
+  color: #2a5834;
+  border-color: #d0e2d3;
+}
+.policy-action-btn.edit-btn:hover {
+  background: #e1ede3;
+}
+.policy-action-btn.delete-btn {
+  background: #fdf2f2;
+  color: #991b1b;
+  border-color: #fed7d7;
+}
+.policy-action-btn.delete-btn:hover {
+  background: #fae1e1;
+}
+
+/* Modal Form Styles */
+.policy-modal-form {
+  max-width: 530px;
+}
+.policy-edit-form {
+  margin-top: 14px;
+}
+.policy-form-field {
+  display: block;
+  margin-bottom: 11px;
+  text-align: left;
+}
+.policy-form-field > span {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #4b5a4d;
+  margin-bottom: 4px;
+}
+.policy-form-field input,
+.policy-form-field select,
+.policy-form-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  border: 1px solid #dce2d7;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 9.5px;
+  color: #314234;
+  font-family: inherit;
+  outline: none;
+}
+.policy-form-field input:focus,
+.policy-form-field select:focus,
+.policy-form-field textarea:focus {
+  border-color: #3f6848;
+}
+.policy-form-field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+.policy-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.form-error-msg {
+  display: block;
+  color: #b91c1c;
+  font-size: 8px;
+  margin-top: 3px;
+}
+.policy-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e9ece5;
+}
+.policy-btn-cancel {
+  padding: 6px 12px;
+  border: 1px solid #dce2d8;
+  border-radius: 4px;
+  background: #fff;
+  color: #556658;
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.policy-btn-cancel:hover {
+  background: #f4f6f3;
+}
+.policy-btn-save {
+  padding: 6px 15px;
+  border: 0;
+  border-radius: 4px;
+  background: #2d5a37;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.policy-btn-save:hover {
+  background: #23472b;
+}
+.policy-btn-danger {
+  padding: 6px 15px;
+  border: 0;
+  border-radius: 4px;
+  background: #b91c1c;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.policy-btn-danger:hover {
+  background: #991b1b;
+}
+.delete-badge-label {
+  color: #b91c1c !important;
+}
+.delete-confirm-modal p {
+  margin: 10px 0 16px;
+  color: #5d685e;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
 /* About and account pages */
 .about-page {
   max-width: 1080px;
