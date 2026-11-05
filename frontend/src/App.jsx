@@ -10,6 +10,8 @@ import AboutPage from "./pages/AboutPage";
 import AuthPage from "./pages/AuthPage";
 import RoleSelectionPage from "./pages/RoleSelectionPage";
 import "./App.css";
+import { useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function SiteLayout({ children }) {
   return (
@@ -22,6 +24,11 @@ function SiteLayout({ children }) {
 }
 
 export default function App() {
+  const { loading } = useAuth();
+
+  if (loading) {
+      return <div>Loading...</div>;
+  }
   return (
     <BrowserRouter>
       <Routes>
@@ -34,12 +41,14 @@ export default function App() {
           }
         />
         <Route
-          path="/explore"
-          element={
-            <SiteLayout>
-              <ExplorePage />
-            </SiteLayout>
-          }
+            path="/explore"
+            element={
+                <ProtectedRoute>
+                    <SiteLayout>
+                        <ExplorePage />
+                    </SiteLayout>
+                </ProtectedRoute>
+            }
         />
         <Route
           path="/explore/parcels/:parcelId"
@@ -58,12 +67,14 @@ export default function App() {
           }
         />
         <Route
-          path="/policies"
-          element={
-            <SiteLayout>
-              <PoliciesPage />
-            </SiteLayout>
-          }
+            path="/policies"
+            element={
+                <ProtectedRoute>
+                    <SiteLayout>
+                        <PoliciesPage />
+                    </SiteLayout>
+                </ProtectedRoute>
+            }
         />
         <Route
           path="/about"
