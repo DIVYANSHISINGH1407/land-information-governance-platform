@@ -24,7 +24,7 @@ export default function RoleSelectionPage({ mode = "login" }) {
   const navigate = useNavigate();
 
   function continueToAccountForm() {
-    const nextPage = mode === "signup" ? "signup" : "login";
+    const nextPage = mode === "signup" ? "register" : "login";
     navigate(`/${nextPage}/${selectedRole}`);
   }
 
@@ -91,7 +91,7 @@ export default function RoleSelectionPage({ mode = "login" }) {
           onClick={continueToAccountForm}
         >
           {mode === "signup"
-            ? "Continue to sign up"
+            ? "Continue to register"
             : "Continue to log in"}{" "}
           <span>→</span>
         </button>
@@ -100,7 +100,7 @@ export default function RoleSelectionPage({ mode = "login" }) {
           {mode === "signup"
             ? "Already have an account?"
             : "New to BhumiSetu?"}{" "}
-          <Link to={mode === "signup" ? "/login" : "/signup"}>
+          <Link to={mode === "signup" ? "/login" : "/register"}>
             {mode === "signup" ? "Log in" : "Create an account"}
           </Link>
         </p>

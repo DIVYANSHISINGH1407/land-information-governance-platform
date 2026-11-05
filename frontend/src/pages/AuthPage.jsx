@@ -124,12 +124,13 @@ export default function AuthPage({ mode }) {
             </div>
           )}
 
-          <Link
+          <button
+            type="button"
             className="primary-button auth-submit"
-            to={`/login/${role}`}
+            onClick={() => navigate(`/login/${registeredUser.role}`)}
           >
             Continue to Login →
-          </Link>
+          </button>
         </section>
       </main>
     );
@@ -156,7 +157,7 @@ export default function AuthPage({ mode }) {
           {mode === "login" ? "Signing in as" : "Creating a"}{" "}
           <b>{roleNames[role]}</b>
           {" · "}
-          <Link to={mode === "login" ? "/login" : "/signup"}>
+          <Link to={mode === "login" ? "/login" : "/register"}>
             Change account type
           </Link>
         </p>
@@ -251,7 +252,7 @@ export default function AuthPage({ mode }) {
           {mode === "signup"
             ? "Already have an account?"
             : "New to BhumiSetu?"}{" "}
-          <Link to={mode === "signup" ? "/login" : "/signup"}>
+          <Link to={mode === "signup" ? "/login" : "/register"}>
             {mode === "signup" ? "Log in" : "Create an account"}
           </Link>
         </p>

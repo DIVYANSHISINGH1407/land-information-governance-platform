@@ -24,8 +24,8 @@ function Navbar() {
             ))}
           </nav>
 
-          <a href="/signup" className="signup-btn">
-            Sign Up
+          <a href="/register" className="signup-btn">
+            Register
           </a>
 
           <button type="button" className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
@@ -40,8 +40,8 @@ function Navbar() {
             {link.name}
           </a>
         ))}
-        <a href="/signup" className="signup-btn mobile-signup" onClick={() => setMenuOpen(false)}>
-          Sign Up
+        <a href="/register" className="signup-btn mobile-signup" onClick={() => setMenuOpen(false)}>
+          Register
         </a>
       </div>
     </header>

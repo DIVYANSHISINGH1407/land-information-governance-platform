@@ -75,7 +75,7 @@ export default function SiteNavbar() {
               Log in
             </Link>
 
-            <Link className="start-button" to="/signup">
+            <Link className="start-button" to="/register">
               Get Started <span>→</span>
             </Link>
           </>
