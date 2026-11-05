@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css}\" \"vite.config.js\" \"index.html\""
   },
   "dependencies": {
+    "axios": "^1.21.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.5"

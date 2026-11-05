@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -7,14 +8,7 @@ const roles = [
     icon: "▤",
     name: "Government official",
     description: "Manage land records, reports and public information.",
-    access: "Verification required",
-  },
-  {
-    id: "researcher",
-    icon: "⌕",
-    name: "Researcher",
-    description: "Explore research resources, land data and policies.",
-    access: "Research access",
+    access: "Government access",
   },
   {
     id: "public",
@@ -37,8 +31,16 @@ export default function RoleSelectionPage({ mode = "login" }) {
   return (
     <main className="role-selection-page">
       <section className="role-selection-card">
-        <span className="overline">{mode === "signup" ? "JOIN BHUMISETU" : "ACCOUNT ACCESS"}</span>
-        <h1>{mode === "signup" ? "Choose your account type" : "Choose your account"}</h1>
+        <span className="overline">
+          {mode === "signup" ? "JOIN BHUMISETU" : "ACCOUNT ACCESS"}
+        </span>
+
+        <h1>
+          {mode === "signup"
+            ? "Choose your account type"
+            : "Choose your account"}
+        </h1>
+
         <p className="role-selection-intro">
           {mode === "signup"
             ? "Choose how you will use BhumiSetu to create the right account."
@@ -50,26 +52,54 @@ export default function RoleSelectionPage({ mode = "login" }) {
             <button
               key={role.id}
               type="button"
-              className={selectedRole === role.id ? "role-card selected" : "role-card"}
+              className={
+                selectedRole === role.id
+                  ? "role-card selected"
+                  : "role-card"
+              }
               onClick={() => setSelectedRole(role.id)}
               aria-pressed={selectedRole === role.id}
             >
               <span className="role-card-top">
                 <span className="role-card-icon">{role.icon}</span>
-                {mode === "signup" && <span className="role-card-access">{role.access}</span>}
+                {mode === "signup" && (
+                  <span className="role-card-access">{role.access}</span>
+                )}
               </span>
-              <b>{mode === "login" && role.id === "public" ? "Public" : role.name}</b>
-              <span className="role-card-description">{role.description}</span>
-              <small>{selectedRole === role.id ? "Selected" : "Click to select"}</small>
+
+              <b>
+                {mode === "login" && role.id === "public"
+                  ? "Public"
+                  : role.name}
+              </b>
+
+              <span className="role-card-description">
+                {role.description}
+              </span>
+
+              <small>
+                {selectedRole === role.id
+                  ? "Selected"
+                  : "Click to select"}
+              </small>
             </button>
           ))}
         </div>
 
-        <button className="primary-button role-continue" onClick={continueToAccountForm}>
-          {mode === "signup" ? "Continue to sign up" : "Continue to log in"} <span>→</span>
+        <button
+          className="primary-button role-continue"
+          onClick={continueToAccountForm}
+        >
+          {mode === "signup"
+            ? "Continue to sign up"
+            : "Continue to log in"}{" "}
+          <span>→</span>
         </button>
+
         <p className="role-selection-signup">
-          {mode === "signup" ? "Already have an account?" : "New to BhumiSetu?"}{" "}
+          {mode === "signup"
+            ? "Already have an account?"
+            : "New to BhumiSetu?"}{" "}
           <Link to={mode === "signup" ? "/login" : "/signup"}>
             {mode === "signup" ? "Log in" : "Create an account"}
           </Link>
