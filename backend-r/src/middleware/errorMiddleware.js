@@ -35,8 +35,8 @@ function errorMiddleware(error, req, res, next) {
     message = "The database is temporarily unavailable.";
   }
 
-  if (process.env.NODE_ENV === "production" && statusCode >= 500) {
-    message = "An unexpected server error occurred.";
+  if (statusCode >= 500) {
+    message = "The service could not complete your request. Please try again later.";
   }
 
   res.status(statusCode).json({ success: false, message });

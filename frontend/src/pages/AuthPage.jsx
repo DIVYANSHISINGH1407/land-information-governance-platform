@@ -91,17 +91,24 @@ export default function AuthPage({ mode }) {
         navigate("/explore");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "Something went wrong. Please try again."
-      );
+      const status = err.response?.status;
+
+      if (status === 401) {
+        setError("We couldn't verify those details. Check them and try again.");
+      } else if (status === 409) {
+        setError("An account already exists with those details. Try logging in.");
+      } else if (status === 400) {
+        setError("Please check the information you entered and try again.");
+      } else {
+        setError("We couldn't complete your request. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
   }
 
   // Registration success screen
-  if (registeredUser) {
+  if (mode === "signup" && registeredUser) {
     return (
       <main className="auth-page">
         <section className="auth-intro">
@@ -138,7 +145,6 @@ export default function AuthPage({ mode }) {
   return (
     <main className="auth-page">
       <section className="auth-intro">
-        <span className="overline">BHUMISETU · ACCOUNT SETUP</span>
 
         <h1>
           {mode === "signup"
