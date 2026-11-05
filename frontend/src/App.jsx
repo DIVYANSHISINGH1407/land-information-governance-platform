@@ -87,7 +87,7 @@ export default function App() {
           }
         />
         <Route
-          path="/signup"
+          path="/register"
           element={
             <SiteLayout>
               <RoleSelectionPage mode="signup" />
@@ -95,7 +95,7 @@ export default function App() {
           }
         />
         <Route
-          path="/signup/:role"
+          path="/register/:role"
           element={
             <SiteLayout>
               <AuthPage mode="signup" />
