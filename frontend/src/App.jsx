@@ -3,6 +3,7 @@ import SiteNavbar from "./components/SiteNavbar";
 import SiteFooter from "./components/SiteFooter";
 import HomePage from "./pages/HomePage";
 import ExplorePage from "./pages/ExplorePage";
+import ParcelProfilePage from "./pages/ParcelProfilePage";
 import ResearchPage from "./pages/ResearchPage";
 import PoliciesPage from "./pages/PoliciesPage";
 import AboutPage from "./pages/AboutPage";
@@ -50,14 +51,20 @@ export default function App() {
             }
         />
         <Route
-            path="/research"
-            element={
-                <ProtectedRoute>
-                    <SiteLayout>
-                        <ResearchPage />
-                    </SiteLayout>
-                </ProtectedRoute>
-            }
+          path="/explore/parcels/:parcelId"
+          element={
+            <SiteLayout>
+              <ParcelProfilePage />
+            </SiteLayout>
+          }
+        />
+        <Route
+          path="/research"
+          element={
+            <SiteLayout>
+              <ResearchPage />
+            </SiteLayout>
+          }
         />
         <Route
             path="/policies"
