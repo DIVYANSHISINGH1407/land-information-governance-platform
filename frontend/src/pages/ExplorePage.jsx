@@ -1,426 +1,444 @@
-import { useState } from "react";
-import { districtsByState, landData } from "../data/mockData";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  getDistricts,
+  getSourceVillages,
+  getStateLandUseSummary,
+  getStates,
+  getTehsils,
+  getVillages,
+  searchParcels,
+} from "../services/api";
 
-const dashboardTabs = ["Overview", "Land Classification", "Ownership"];
+const emptyFilters = {
+  stateId: "",
+  districtId: "",
+  tehsilId: "",
+  villageId: "",
+};
 
-// Add commas to a number so large areas are easier to read.
-function formatNumber(value) {
-  return Math.round(value).toLocaleString("en-IN");
+const chartColors = ["#337457", "#d49c45", "#5688a6", "#b9684f", "#788b60"];
+
+function getRecordLocation(parcel, field) {
+  return parcel.location?.[field] || parcel[field] || "Not available in source";
 }
 
-// Use district percentages when a district is selected. Otherwise show state figures.
-function getLandTypes(stateData, districtData) {
-  if (!districtData) {
-    return stateData.classification;
+function countLandUse(records) {
+  const counts = {};
+  records.forEach((record) => {
+    const landUse = record.landUse || "Not specified";
+    counts[landUse] = (counts[landUse] || 0) + 1;
+  });
+
+  return Object.entries(counts).map(([name, count], index) => ({
+    name,
+    count,
+    color: chartColors[index % chartColors.length],
+  }));
+}
+
+function SearchResults({ parcels, loading, error, totalRecords, onRetry }) {
+  if (loading) {
+    return <div className="explorer-state">Loading parcel records…</div>;
   }
 
-  return stateData.classification.map((landType) => {
-    const percent = districtData.classification[landType.name];
+  if (error) {
+    return (
+      <div className="explorer-state explorer-state-error" role="alert">
+        <b>We couldn’t load parcel records.</b>
+        <span>{error}</span>
+        <button type="button" onClick={onRetry}>Try again</button>
+      </div>
+    );
+  }
 
-    return {
-      name: landType.name,
-      color: landType.color,
-      percent,
-      area: Math.round((districtData.totalArea * percent) / 100),
-    };
-  });
-}
+  if (totalRecords === 0) {
+    return (
+      <div className="explorer-state">
+        <b>No matching records</b>
+          <span>Choose another state, district, tehsil, or village.</span>
+      </div>
+    );
+  }
 
-function CategoryChart({ landTypes, selectedType, onSelectType }) {
   return (
-    <div className="simple-category-chart">
-      {landTypes.map((landType) => (
-        <button
-          key={landType.name}
-          className={selectedType === landType.name ? "chart-row selected" : "chart-row"}
-          onClick={() => onSelectType(landType.name)}
-        >
-          <span className="chart-row-name">
-            <i style={{ background: landType.color }} />
-            {landType.name}
-          </span>
-          <span className="chart-row-track">
-            <i
-              style={{
-                width: `${landType.percent}%`,
-                background: landType.color,
-              }}
-            />
-          </span>
-          <b>{landType.percent}%</b>
-          <small>{formatNumber(landType.area)} km²</small>
-        </button>
+    <div className="parcel-card-list">
+      {parcels.map((parcel) => (
+        <article className="parcel-result-card" key={`${parcel.source}-${parcel.parcelId}`}>
+          <div className="parcel-card-topline">
+            <div>
+              <span className="explorer-eyebrow">PARCEL ID</span>
+              <h3>{parcel.parcelId}</h3>
+            </div>
+            <span
+              className={`status-pill ${String(parcel.verificationStatus)
+                .toLowerCase()
+                .replaceAll(" ", "-")}`}
+            >
+              {parcel.verificationStatus || "Status unavailable"}
+            </span>
+          </div>
+
+          <div className="parcel-card-grid">
+            <div><span>Khasra number</span><b>{parcel.khasraNumber}</b></div>
+            <div><span>Village</span><b>{getRecordLocation(parcel, "village")}</b></div>
+            <div><span>District</span><b>{getRecordLocation(parcel, "district")}</b></div>
+            <div><span>Recorded area</span><b>{parcel.recordedArea} {parcel.areaUnit}</b></div>
+            <div><span>Recorded land use</span><b>{parcel.landUse}</b></div>
+            <div><span>Revenue record</span><b>{parcel.revenueRecord}</b></div>
+          </div>
+
+          <Link
+            className="parcel-profile-link"
+            to={`/explore/parcels/${encodeURIComponent(parcel.parcelId)}`}
+          >
+            View complete land profile <span aria-hidden="true">→</span>
+          </Link>
+        </article>
       ))}
     </div>
   );
 }
 
-// Build the colored slices for a CSS pie chart from the land percentages.
-function getPieColors(landTypes) {
-  let start = 0;
-  const slices = landTypes.map((landType) => {
-    const end = start + landType.percent;
-    const slice = `${landType.color} ${start}% ${end}%`;
-    start = end;
-    return slice;
+function LandUseStateSlider({
+  states,
+  selectedStateId,
+  onStateChange,
+  summary,
+  loading,
+  error,
+}) {
+  const selectedIndex = states.findIndex((state) => state._id === selectedStateId);
+  const landUseTypes = summary?.data || [];
+  const slices = landUseTypes.map((item, index) => {
+    const start = landUseTypes
+      .slice(0, index)
+      .reduce((total, previous) => total + previous.share, 0);
+    return `${chartColors[index % chartColors.length]} ${start}% ${start + item.share}%`;
   });
 
-  return `conic-gradient(${slices.join(", ")})`;
-}
-
-function LandUsePieChart({ landTypes }) {
   return (
-    <div className="pie-chart-layout">
-      <div
-        className="land-use-pie"
-        role="img"
-        aria-label="Pie chart showing land use by category"
-        style={{ background: getPieColors(landTypes) }}
-      />
-      <div className="pie-chart-legend">
-        {landTypes.map((landType) => (
-          <div className="pie-legend-row" key={landType.name}>
-            <span>
-              <i style={{ background: landType.color }} />
-              {landType.name}
-            </span>
-            <b>{landType.percent}%</b>
+    <section className="state-cover-panel">
+      <div className="state-cover-heading">
+        <div>
+          <span className="explorer-eyebrow">STATE LAND COVER</span>
+          <h2>Explore land use by state</h2>
+          <p>Choose a state to see the land-use mix in its connected parcel records.</p>
+        </div>
+        <span className="state-cover-selected">
+          {states[selectedIndex]?.name || "No state selected"}
+        </span>
+      </div>
+
+      {states.length > 0 && (
+        <div className="state-slider-row">
+          <span>{states[0].name}</span>
+          <input
+            aria-label="Select state for land cover"
+            type="range"
+            min="0"
+            max={Math.max(states.length - 1, 0)}
+            step="1"
+            value={Math.max(selectedIndex, 0)}
+            disabled={states.length < 2}
+            onChange={(event) => onStateChange(states[Number(event.target.value)]._id)}
+          />
+          <span>{states[states.length - 1].name}</span>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="state-cover-message">Loading state summary…</p>
+      ) : error ? (
+        <p className="state-cover-message state-cover-error" role="alert">{error}</p>
+      ) : summary?.totalRecords > 0 ? (
+        <div className="state-cover-content">
+          <div
+            className="state-cover-chart"
+            role="img"
+            aria-label={`Recorded land-use distribution in ${summary.state}`}
+            style={{ background: `conic-gradient(${slices.join(", ")})` }}
+          />
+          <div className="state-cover-legend">
+            {landUseTypes.map((item, index) => (
+              <div key={item.landUse}>
+                <i style={{ background: chartColors[index % chartColors.length] }} />
+                <b>{item.landUse}</b>
+                <span>{item.share}% · {item.recordCount} records</span>
+              </div>
+            ))}
+            <p>
+              Based on {summary.totalRecords} records in this database. Shares show record counts,
+              not the state’s total land area.
+            </p>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function OwnershipChart({ government, privateShare }) {
-  return (
-    <div className="simple-ownership-chart">
-      <div className="ownership-share-bar" aria-label="Ownership share">
-        <span style={{ width: `${government}%` }} />
-      </div>
-      <div className="ownership-share-labels">
-        <p>
-          <i className="gov-key" />
-          Government / public <b>{government}%</b>
+        </div>
+      ) : (
+        <p className="state-cover-message">
+          No land-use records are available for this state yet.
         </p>
-        <p>
-          <i className="private-key" />
-          Private / other <b>{privateShare}%</b>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function EmptyDistrictNotice() {
-  return (
-    <section className="explore-empty">
-      <span>⌖</span>
-      <h2>District data is not available in this demo</h2>
-      <p>
-        We don’t show state statistics as district figures. Choose “All available area” or a
-        district with sample data.
-      </p>
+      )}
     </section>
   );
 }
 
 export default function ExplorePage() {
-  // These values remember the visitor's current selections while the page is open.
-  const [state, setState] = useState("Uttar Pradesh");
-  const [district, setDistrict] = useState("");
-  const [activeTab, setActiveTab] = useState("Overview");
-  const [selectedType, setSelectedType] = useState("");
+  const [filters, setFilters] = useState(emptyFilters);
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [tehsils, setTehsils] = useState([]);
+  const [villages, setVillages] = useState([]);
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [stateSummary, setStateSummary] = useState(null);
+  const [summaryForStateId, setSummaryForStateId] = useState("");
+  const [summaryError, setSummaryError] = useState("");
+  const [parcels, setParcels] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ totalRecords: 0, totalPages: 0 });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [locationError, setLocationError] = useState("");
+  const [searched, setSearched] = useState(false);
 
-  const stateData = landData[state];
-  const districts = districtsByState[state] || [];
-  const districtData = stateData.districts && stateData.districts[district];
-  const landTypes = getLandTypes(stateData, districtData);
-  const totalArea = districtData ? districtData.totalArea : stateData.totalArea;
-  const governmentShare = districtData ? districtData.government : stateData.government;
-  const privateShare = districtData ? districtData.private : stateData.private;
+  useEffect(() => {
+    getStates()
+      .then((result) => {
+        const availableStates = result.data || [];
+        setStates(availableStates);
+        if (availableStates.length > 0) setSelectedStateId(availableStates[0]._id);
+      })
+      .catch((requestError) => setLocationError(requestError.message));
+  }, []);
 
-  function changeState(newState) {
-    setState(newState);
-    setDistrict("");
-    setSelectedType("");
+  useEffect(() => {
+    if (!selectedStateId) return;
+    getStateLandUseSummary(selectedStateId)
+      .then((result) => {
+        setStateSummary(result);
+        setSummaryForStateId(selectedStateId);
+        setSummaryError("");
+      })
+      .catch((requestError) => {
+        setStateSummary(null);
+        setSummaryForStateId(selectedStateId);
+        setSummaryError(requestError.message);
+      });
+  }, [selectedStateId]);
+
+  useEffect(() => {
+    if (!filters.stateId) return;
+    getDistricts(filters.stateId)
+      .then((result) => setDistricts(result.data || []))
+      .catch((requestError) => setLocationError(requestError.message));
+  }, [filters.stateId]);
+
+  useEffect(() => {
+    if (!filters.districtId) return;
+    getTehsils(filters.districtId)
+      .then((result) => setTehsils(result.data || []))
+      .catch((requestError) => setLocationError(requestError.message));
+  }, [filters.districtId]);
+
+  useEffect(() => {
+    if (filters.districtId.startsWith("source|")) {
+      const [, stateName, districtName] = filters.districtId.split("|");
+      getSourceVillages(stateName, districtName)
+        .then((result) => setVillages(result.data || []))
+        .catch((requestError) => setLocationError(requestError.message));
+      return;
+    }
+    if (!filters.tehsilId) return;
+    getVillages(filters.tehsilId)
+      .then((result) => setVillages(result.data || []))
+      .catch((requestError) => setLocationError(requestError.message));
+  }, [filters.districtId, filters.tehsilId]);
+
+  function updateFilter(field, value) {
+    if (field === "stateId") {
+      setDistricts([]);
+      setTehsils([]);
+      setVillages([]);
+    }
+    if (field === "districtId") {
+      setTehsils([]);
+      setVillages([]);
+    }
+    if (field === "tehsilId") setVillages([]);
+
+    setFilters((current) => {
+      const next = { ...current, [field]: value };
+      if (field === "stateId") {
+        next.districtId = "";
+        next.tehsilId = "";
+        next.villageId = "";
+      }
+      if (field === "districtId") {
+        next.tehsilId = "";
+        next.villageId = "";
+      }
+      if (field === "tehsilId") next.villageId = "";
+      return next;
+    });
   }
 
-  function changeDistrict(newDistrict) {
-    setDistrict(newDistrict);
-    setSelectedType("");
+  async function search(nextPage = 1) {
+    const hasSelectedArea = Boolean(
+      filters.stateId || filters.districtId || filters.tehsilId || filters.villageId,
+    );
+    if (!hasSelectedArea) {
+      setSearched(true);
+      setError("Select a state, district, tehsil, or village to browse its records.");
+      setParcels([]);
+      setPagination({ totalRecords: 0, totalPages: 0 });
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setSearched(true);
+    try {
+      const result = await searchParcels({ ...filters, page: nextPage, limit: 10 });
+      setParcels(result.data || []);
+      setPagination(result.pagination || { totalRecords: 0, totalPages: 0 });
+      setPage(nextPage);
+    } catch (requestError) {
+      setParcels([]);
+      setPagination({ totalRecords: 0, totalPages: 0 });
+      setError(requestError.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function toggleSelectedType(name) {
-    setSelectedType(selectedType === name ? "" : name);
+  function clearFilters() {
+    setFilters(emptyFilters);
+    setDistricts([]);
+    setTehsils([]);
+    setVillages([]);
+    setParcels([]);
+    setPagination({ totalRecords: 0, totalPages: 0 });
+    setPage(1);
+    setSearched(false);
+    setError("");
   }
+
+  const resultLandUse = countLandUse(parcels);
+  const visibleRecordCount = resultLandUse.reduce((total, item) => total + item.count, 0);
+  const resultSlices = resultLandUse.map((item, index) => {
+    const start = resultLandUse
+      .slice(0, index)
+      .reduce((total, previous) => total + (previous.count / visibleRecordCount) * 100, 0);
+    return `${item.color} ${start}% ${start + (item.count / visibleRecordCount) * 100}%`;
+  });
+  const summaryIsLoading = Boolean(selectedStateId && summaryForStateId !== selectedStateId);
 
   return (
-    <main className="inner-page explore-page">
-      <section className="page-heading">
+    <main className="inner-page explorer-page">
+      <section className="explorer-heading">
         <div>
-          <span className="overline">LAND DATA EXPLORER</span>
-          <h1>Explore Land</h1>
-          <p>Discover land classification and ownership patterns across states and districts.</p>
+          <span className="overline">BHUMISETU · PUBLIC LAND RECORDS</span>
+          <h1>Land Information Explorer</h1>
+          <p>Explore and access organized land parcel information through a unified digital platform.</p>
         </div>
-        <span className="demo-label">◉ &nbsp; DEMONSTRATION DATA</span>
+        <div className="live-data-mark"><i /> Live database</div>
       </section>
 
-      <section className="explore-filters">
-        <div className="filter-explainer">
-          <span className="filter-location-icon">⌖</span>
+      <LandUseStateSlider
+        states={states}
+        selectedStateId={selectedStateId}
+        onStateChange={setSelectedStateId}
+        summary={stateSummary}
+        loading={summaryIsLoading}
+        error={summaryForStateId === selectedStateId ? summaryError : ""}
+      />
+
+      <section className="explorer-search-panel">
+        <div className="explorer-panel-heading">
           <div>
-            <b>Select an area</b>
-            <small>Choose a state to begin exploring</small>
+            <span className="explorer-eyebrow">BROWSE BY LOCATION</span>
+            <h2>Choose an area to explore</h2>
           </div>
+          <span className="optional-note">Select a state or a more specific area</span>
         </div>
 
-        <label>
-          <span>STATE</span>
-          <select value={state} onChange={(event) => changeState(event.target.value)}>
-            {Object.keys(landData).map((name) => (
-              <option key={name}>{name}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          <span>
-            DISTRICT <small>OPTIONAL</small>
-          </span>
-          <select
-            value={district}
-            onChange={(event) => changeDistrict(event.target.value)}
-            disabled={districts.length === 0}
-          >
-            <option value="">
-              {districts.length > 0 ? "All available area" : "No district demo data"}
-            </option>
-            {districts.map((name) => (
-              <option key={name}>{name}</option>
-            ))}
-          </select>
-        </label>
-
-        <span className="unit-pill">Area in km²</span>
+        <form
+          className="explorer-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            search(1);
+          }}
+        >
+          <label>
+            <span>State</span>
+            <select value={filters.stateId} onChange={(event) => updateFilter("stateId", event.target.value)}>
+              <option value="">All available states</option>
+              {states.map((state) => <option value={state._id} key={state._id}>{state.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>District</span>
+            <select value={filters.districtId} onChange={(event) => updateFilter("districtId", event.target.value)} disabled={!filters.stateId}>
+              <option value="">All available districts</option>
+              {districts.map((district) => <option value={district._id} key={district._id}>{district.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>Tehsil</span>
+            <select value={filters.tehsilId} onChange={(event) => updateFilter("tehsilId", event.target.value)} disabled={!filters.districtId}>
+              <option value="">{filters.districtId.startsWith("source|") ? "Not included in source records" : "All available tehsils"}</option>
+              {tehsils.map((tehsil) => <option value={tehsil._id} key={tehsil._id}>{tehsil.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>Village</span>
+            <select value={filters.villageId} onChange={(event) => updateFilter("villageId", event.target.value)} disabled={!filters.tehsilId && !filters.districtId.startsWith("source|")}>
+              <option value="">All available villages</option>
+              {villages.map((village) => <option value={village._id} key={village._id}>{village.name}</option>)}
+            </select>
+          </label>
+          <div className="explorer-form-actions">
+            <button className="explorer-submit" type="submit">Explore selected area <span>→</span></button>
+            <button className="explorer-clear" type="button" onClick={clearFilters}>Clear filters</button>
+          </div>
+        </form>
+        {locationError && <p className="explorer-note" role="status">Location filters: {locationError}</p>}
+        {!locationError && states.some((state) => state.source === "parcel_imports") && (
+          <p className="explorer-note">Tehsil assignments are not included in the current source records. Choose a district and then a village to filter those records.</p>
+        )}
       </section>
 
-      <div className="explore-tabbar" role="tablist" aria-label="Explore land dashboard">
-        {dashboardTabs.map((tab) => (
-          <button
-            key={tab}
-            role="tab"
-            aria-selected={activeTab === tab}
-            className={activeTab === tab ? "active" : ""}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {district && !districtData ? (
-        <EmptyDistrictNotice />
-      ) : (
+      {searched && (
         <>
-          <section className="area-title">
+          <section className="explorer-results-heading">
             <div>
-              <span className="overline">{district ? "DISTRICT OVERVIEW" : "STATE OVERVIEW"}</span>
-              <h2>{district ? `${district}, ${state}` : state}</h2>
-              <p>Illustrative regional overview · figures are not verified official statistics</p>
+              <span className="explorer-eyebrow">SEARCH RESULTS</span>
+              <h2>{pagination.totalRecords} matching records</h2>
             </div>
-            <div className="area-total">
-              <span>TOTAL GEOGRAPHICAL AREA</span>
-              <b>
-                {formatNumber(totalArea)} <small>km²</small>
-              </b>
-            </div>
+            {visibleRecordCount > 0 && (
+              <div className="result-landuse-summary">
+                <div className="result-landuse-pie" role="img" aria-label="Land use breakdown for visible results" style={{ background: `conic-gradient(${resultSlices.join(", ")})` }} />
+                <div><b>Land use in these results</b>{resultLandUse.map((item) => <span key={item.name}><i style={{ background: item.color }} />{item.name} · {item.count}</span>)}</div>
+              </div>
+            )}
           </section>
 
-          {activeTab === "Overview" && (
-            <>
-              <section className="overview-metrics">
-                {landTypes.slice(0, 4).map((landType) => (
-                  <article key={landType.name}>
-                    <span className="metric-swatch" style={{ background: landType.color }} />
-                    <small>{landType.name.toUpperCase()} LAND</small>
-                    <b>{landType.percent}%</b>
-                    <span>{formatNumber(landType.area)} km²</span>
-                  </article>
-                ))}
-              </section>
+          <SearchResults
+            parcels={parcels}
+            loading={loading}
+            error={error}
+            totalRecords={pagination.totalRecords}
+            onRetry={() => search(page)}
+          />
 
-              <section className="explore-chart-grid">
-                <article className="content-panel">
-                  <div className="panel-title">
-                    <div>
-                      <span className="overline">CLASSIFICATION</span>
-                      <h3>Land use distribution</h3>
-                    </div>
-                    <span>Share of area</span>
-                  </div>
-                  <LandUsePieChart landTypes={landTypes} />
-                  <p className="chart-caption">
-                    The pie shows each land type’s share of the area. Land ownership is shown
-                    separately.
-                  </p>
-                </article>
-
-                <article className="content-panel">
-                  <div className="panel-title">
-                    <div>
-                      <span className="overline">OWNERSHIP</span>
-                      <h3>Government and private land</h3>
-                    </div>
-                    <span>Share of area</span>
-                  </div>
-                  <div className="ownership-panel-content">
-                    <OwnershipChart government={governmentShare} privateShare={privateShare} />
-                    <p className="ownership-explanation">
-                      Ownership is separate from land use. Agricultural land can be privately or
-                      publicly owned.
-                    </p>
-                  </div>
-                </article>
-              </section>
-
-              <section className="insight-band">
-                <span>✳</span>
-                <div>
-                  <b>What this view tells you</b>
-                  <p>
-                    {landTypes[0].percent}% of the mapped area is classified as{" "}
-                    {landTypes[0].name.toLowerCase()}. Ownership is displayed separately from land
-                    use.
-                  </p>
-                </div>
-              </section>
-            </>
-          )}
-
-          {activeTab === "Land Classification" && (
-            <>
-              <section className="content-panel classification-detail">
-                <div className="panel-title">
-                  <div>
-                    <span className="overline">LAND CLASSIFICATION</span>
-                    <h3>Distribution by land type</h3>
-                    <p>Select a category to highlight it in the chart.</p>
-                  </div>
-                  <span>Area: km² · Share: %</span>
-                </div>
-
-                <div className="classification-layout">
-                  <CategoryChart
-                    landTypes={landTypes}
-                    selectedType={selectedType}
-                    onSelectType={toggleSelectedType}
-                  />
-                  <div className="classification-table">
-                    <div className="classification-row classification-head">
-                      <span>CATEGORY</span>
-                      <span>AREA</span>
-                      <span>SHARE</span>
-                    </div>
-                    {landTypes.map((landType) => (
-                      <button
-                        key={landType.name}
-                        className={
-                          selectedType === landType.name
-                            ? "classification-row row-selected"
-                            : "classification-row"
-                        }
-                        onClick={() => toggleSelectedType(landType.name)}
-                      >
-                        <span>
-                          <i style={{ background: landType.color }} />
-                          {landType.name}
-                        </span>
-                        <b>{formatNumber(landType.area)} km²</b>
-                        <b>{landType.percent}%</b>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              <section className="content-panel">
-                <div className="panel-title">
-                  <div>
-                    <span className="overline">COMPARISON</span>
-                    <h3>Area by category</h3>
-                  </div>
-                  <span>Each bar shows the category’s share of the area</span>
-                </div>
-                <CategoryChart
-                  landTypes={landTypes}
-                  selectedType={selectedType}
-                  onSelectType={toggleSelectedType}
-                />
-              </section>
-            </>
-          )}
-
-          {activeTab === "Ownership" && (
-            <>
-              <section className="content-panel ownership-detail">
-                <div className="panel-title">
-                  <div>
-                    <span className="overline">OWNERSHIP PROFILE</span>
-                    <h3>Land by ownership</h3>
-                    <p>Ownership and land use are separate measures.</p>
-                  </div>
-                </div>
-
-                <div className="ownership-overview">
-                  <OwnershipChart government={governmentShare} privateShare={privateShare} />
-                  <div className="ownership-detail-copy">
-                    <h3>Who holds the land</h3>
-                    <p>
-                      A land parcel can belong to one owner and still be classified as agricultural,
-                      forest or another land type.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="ownership-category-table">
-                  <div className="ownership-cat-row ownership-cat-head">
-                    <span>LAND CLASSIFICATION</span>
-                    <span>AREA</span>
-                    <span>OWNERSHIP DATA</span>
-                  </div>
-                  {landTypes.map((landType) => (
-                    <div className="ownership-cat-row" key={landType.name}>
-                      <span>
-                        <i style={{ background: landType.color }} />
-                        {landType.name}
-                      </span>
-                      <b>{formatNumber(landType.area)} km²</b>
-                      <span className="ownership-availability">Not available in sample data</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section className="insight-band">
-                <span>ⓘ</span>
-                <div>
-                  <b>Ownership-by-category detail</b>
-                  <p>
-                    This demo does not include ownership details for each land category, so those
-                    figures are not estimated.
-                  </p>
-                </div>
-              </section>
-            </>
+          {!loading && !error && pagination.totalPages > 1 && (
+            <nav className="explorer-pagination" aria-label="Parcel search pages">
+              <button type="button" disabled={page <= 1} onClick={() => search(page - 1)}>← Previous</button>
+              <span>Page {page} of {pagination.totalPages}</span>
+              <button type="button" disabled={page >= pagination.totalPages} onClick={() => search(page + 1)}>Next →</button>
+            </nav>
           )}
         </>
       )}
-
-      <p className="data-disclaimer">
-        Demo data for interface demonstration only. Replace with verified statistics and official
-        sources before publication.
-      </p>
     </main>
   );
 }
