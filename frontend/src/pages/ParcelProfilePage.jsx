@@ -118,7 +118,6 @@ export default function ParcelProfilePage() {
           <p>This status is displayed as stored in the source record. BhoomiSetu does not independently verify the record.</p>
         </div>
       </RecordSection>
-      <p className="profile-source-note">Record source: {parcel.source === "parcel_imports" ? "Imported source dataset" : "Linked land records"}. Missing fields are marked unavailable; no ownership, map or registration details are inferred.</p>
     </main>
   );
 }

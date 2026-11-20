@@ -80,29 +80,11 @@ export default function AboutPage() {
           <span className="overline">DATA SOURCES</span>
           <h3>Designed for trusted sources</h3>
           <p>
-            The prototype uses clearly marked sample data. Future integration can connect official
-            land records, government policy documents and published research once verified sources
-            and APIs are available.
-          </p>
-        </article>
-        <article>
-          <span className="overline">TECHNOLOGY</span>
-          <h3>Built with familiar tools</h3>
-          <div className="tech-pills">
-            <span>React</span>
-            <span>Node.js</span>
-            <span>Express</span>
-            <span>PostgreSQL</span>
-          </div>
-          <p>
-            React powers the frontend. Node.js and Express will provide API access, with PostgreSQL
-            storing land, research and policy information.
+            Land parcel records load from the connected MongoDB database. Research and policy
+            references are currently maintained as catalogue entries in the project.
           </p>
         </article>
       </section>
-      <p className="about-disclaimer">
-        BhumiSetu is an academic project concept and is not an official government portal.
-      </p>
     </main>
   );
 }

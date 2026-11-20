@@ -99,38 +99,24 @@
   line-height: 1.6;
 }
 
-.state-cover-selected {
-  flex: none;
-  padding: 10px 15px;
-  border: 1px solid #d9e5d7;
-  border-radius: 999px;
-  background: #fff;
-  color: #2c5838;
-  font-size: 14px;
+.state-cover-select {
+  display: grid;
+  flex: 0 1 330px;
+  gap: 7px;
+  color: #617363;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.state-slider-row {
-  display: grid;
-  grid-template-columns: minmax(70px, auto) minmax(100px, 1fr) minmax(70px, auto);
-  align-items: center;
-  gap: 15px;
-  margin: 21px 0 12px;
-  color: #768579;
-  font-size: 12px;
-}
-
-.state-slider-row span:last-child {
-  text-align: right;
-}
-
-.state-slider-row input {
+.state-cover-select select {
   width: 100%;
-  accent-color: #287049;
-}
-
-.state-slider-row input:disabled {
-  opacity: 0.65;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #d9e5d7;
+  border-radius: 12px;
+  background: #fff;
+  color: #2c5838;
+  font: inherit;
 }
 
 .state-cover-content {
@@ -138,6 +124,7 @@
   align-items: center;
   gap: 35px;
   min-height: 190px;
+  margin-top: 18px;
   padding: 20px 22px;
   border: 1px solid #e6ece2;
   border-radius: 16px;
@@ -179,7 +166,6 @@
   font-size: 13px;
 }
 
-.state-cover-legend p,
 .state-cover-message {
   margin: 6px 0 0;
   color: #7a877c;
@@ -663,6 +649,10 @@
   .state-cover-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .state-cover-select {
+    width: 100%;
+    flex-basis: auto;
   }
   .state-cover-heading h2 {
     font-size: 22px;
