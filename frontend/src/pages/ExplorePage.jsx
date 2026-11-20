@@ -18,6 +18,29 @@ const emptyFilters = {
 };
 
 const chartColors = ["#337457", "#d49c45", "#5688a6", "#b9684f", "#788b60"];
+const indiaStateNames = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry",
+];
+
+function getChartStates(availableStates) {
+  const databaseStates = new Map(
+    availableStates.map((state) => [state.name.toLowerCase(), state]),
+  );
+  const chartStates = indiaStateNames.map((name) =>
+    databaseStates.get(name.toLowerCase()) || { _id: `source|${name}`, name },
+  );
+  const additionalStates = availableStates.filter(
+    (state) => !indiaStateNames.some((name) => name.toLowerCase() === state.name.toLowerCase()),
+  );
+
+  return [...chartStates, ...additionalStates];
+}
 
 function getRecordLocation(parcel, field) {
   return parcel.location?.[field] || parcel[field] || "Not available in source";
@@ -100,7 +123,7 @@ function SearchResults({ parcels, loading, error, totalRecords, onRetry }) {
   );
 }
 
-function LandUseStateSlider({
+function LandUseStateChart({
   states,
   selectedStateId,
   onStateChange,
@@ -108,13 +131,14 @@ function LandUseStateSlider({
   loading,
   error,
 }) {
-  const selectedIndex = states.findIndex((state) => state._id === selectedStateId);
   const landUseTypes = summary?.data || [];
+  let usedPercentage = 0;
   const slices = landUseTypes.map((item, index) => {
-    const start = landUseTypes
-      .slice(0, index)
-      .reduce((total, previous) => total + previous.share, 0);
-    return `${chartColors[index % chartColors.length]} ${start}% ${start + item.share}%`;
+    const share = (item.recordedArea / summary.totalArea) * 100;
+    const start = usedPercentage;
+    const end = index === landUseTypes.length - 1 ? 100 : start + share;
+    usedPercentage = end;
+    return `${chartColors[index % chartColors.length]} ${start}% ${end}%`;
   });
 
   return (
@@ -123,40 +147,31 @@ function LandUseStateSlider({
         <div>
           <span className="explorer-eyebrow">STATE LAND COVER</span>
           <h2>Explore land use by state</h2>
-          <p>Choose a state to see the land-use mix in its connected parcel records.</p>
+          <p>Choose a state to compare land-use shares by recorded parcel area.</p>
         </div>
-        <span className="state-cover-selected">
-          {states[selectedIndex]?.name || "No state selected"}
-        </span>
+        <label className="state-cover-select">
+          <span>Choose a state or union territory</span>
+          <select
+            value={selectedStateId}
+            onChange={(event) => onStateChange(event.target.value)}
+          >
+            {states.map((state) => (
+              <option key={state._id} value={state._id}>{state.name}</option>
+            ))}
+          </select>
+        </label>
       </div>
-
-      {states.length > 0 && (
-        <div className="state-slider-row">
-          <span>{states[0].name}</span>
-          <input
-            aria-label="Select state for land cover"
-            type="range"
-            min="0"
-            max={Math.max(states.length - 1, 0)}
-            step="1"
-            value={Math.max(selectedIndex, 0)}
-            disabled={states.length < 2}
-            onChange={(event) => onStateChange(states[Number(event.target.value)]._id)}
-          />
-          <span>{states[states.length - 1].name}</span>
-        </div>
-      )}
 
       {loading ? (
         <p className="state-cover-message">Loading state summary…</p>
       ) : error ? (
         <p className="state-cover-message state-cover-error" role="alert">{error}</p>
-      ) : summary?.totalRecords > 0 ? (
+      ) : summary?.areaAvailable && summary.totalArea > 0 ? (
         <div className="state-cover-content">
           <div
             className="state-cover-chart"
             role="img"
-            aria-label={`Recorded land-use distribution in ${summary.state}`}
+            aria-label={`Recorded land-area distribution in ${summary.state}`}
             style={{ background: `conic-gradient(${slices.join(", ")})` }}
           />
           <div className="state-cover-legend">
@@ -164,18 +179,20 @@ function LandUseStateSlider({
               <div key={item.landUse}>
                 <i style={{ background: chartColors[index % chartColors.length] }} />
                 <b>{item.landUse}</b>
-                <span>{item.share}% · {item.recordCount} records</span>
+                <span>
+                  {((item.recordedArea / summary.totalArea) * 100).toFixed(1)}% · {item.recordedArea} {summary.areaUnit}
+                </span>
               </div>
             ))}
-            <p>
-              Based on {summary.totalRecords} records in this database. Shares show record counts,
-              not the state’s total land area.
-            </p>
           </div>
         </div>
+      ) : summary?.totalRecords > 0 ? (
+        <p className="state-cover-message">
+          Land-area data is not available in a consistent unit for this state yet.
+        </p>
       ) : (
         <p className="state-cover-message">
-          No land-use records are available for this state yet.
+          Data is not available for this state yet.
         </p>
       )}
     </section>
@@ -185,6 +202,7 @@ function LandUseStateSlider({
 export default function ExplorePage() {
   const [filters, setFilters] = useState(emptyFilters);
   const [states, setStates] = useState([]);
+  const chartStates = getChartStates(states);
   const [districts, setDistricts] = useState([]);
   const [tehsils, setTehsils] = useState([]);
   const [villages, setVillages] = useState([]);
@@ -205,7 +223,10 @@ export default function ExplorePage() {
       .then((result) => {
         const availableStates = result.data || [];
         setStates(availableStates);
-        if (availableStates.length > 0) setSelectedStateId(availableStates[0]._id);
+        const haryana = availableStates.find(
+          (state) => state.name.toLowerCase() === "haryana",
+        );
+        setSelectedStateId(haryana?._id || "source|Haryana");
       })
       .catch((requestError) => setLocationError(requestError.message));
   }, []);
@@ -338,13 +359,11 @@ export default function ExplorePage() {
         <div>
           <span className="overline">BHUMISETU · PUBLIC LAND RECORDS</span>
           <h1>Land Information Explorer</h1>
-          <p>Explore and access organized land parcel information through a unified digital platform.</p>
         </div>
-        <div className="live-data-mark"><i /> Live database</div>
       </section>
 
-      <LandUseStateSlider
-        states={states}
+      <LandUseStateChart
+        states={chartStates}
         selectedStateId={selectedStateId}
         onStateChange={setSelectedStateId}
         summary={stateSummary}

@@ -27,7 +27,7 @@ export default function ResearchPage() {
       <section className="library-hero research-hero">
         <span className="overline">KNOWLEDGE LIBRARY</span>
         <h1>Research &amp; Insights</h1>
-        <p>Explore reports, papers and studies that illuminate land use and governance.</p>
+        <p>Explore reports, papers and studies.</p>
       </section>
       <div className="library-tools">
         <label className="library-search">
@@ -101,10 +101,6 @@ export default function ResearchPage() {
           </button>
         </div>
       )}
-      <p className="data-disclaimer">
-        Sample catalogue entries for demonstration. Titles and publisher information should be
-        verified before release.
-      </p>
       {detail && (
         <div className="modal-backdrop" role="presentation" onClick={() => setDetail(null)}>
           <section
@@ -124,9 +120,6 @@ export default function ResearchPage() {
             <p>{detail.description}</p>
             <div className="modal-publisher">
               Published by <b>{detail.publisher}</b>
-            </div>
-            <div className="modal-sample-note">
-              A full text or source link is not attached to this sample catalogue entry.
             </div>
           </section>
         </div>

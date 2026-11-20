@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { policyItems } from "../data/mockData";
 
-const jurisdictions = ["All jurisdictions", "National", "Uttar Pradesh", "Maharashtra"];
+const jurisdictions = ["All", "National", "State"];
 const categories = [
   "All categories",
   "Land Acquisition",
@@ -13,19 +13,26 @@ const categories = [
 ];
 export default function PoliciesPage() {
   const [query, setQuery] = useState("");
-  const [jurisdiction, setJurisdiction] = useState("All jurisdictions");
+  const [jurisdiction, setJurisdiction] = useState("All");
   const [category, setCategory] = useState("All categories");
   const [detail, setDetail] = useState(null);
 
   // Match the search text, jurisdiction and category filters.
-  const results = policyItems.filter(
-    (item) =>
-      (jurisdiction === "All jurisdictions" || item.jurisdiction === jurisdiction) &&
+  const results = policyItems.filter((item) => {
+    const matchesJurisdiction =
+      jurisdiction === "All" ||
+      (jurisdiction === "National"
+        ? item.jurisdiction === "National"
+        : item.jurisdiction !== "National");
+
+    return (
+      matchesJurisdiction &&
       (category === "All categories" || item.category === category) &&
       `${item.title} ${item.authority} ${item.description} ${item.category} ${item.jurisdiction}`
         .toLowerCase()
-        .includes(query.toLowerCase()),
-  );
+        .includes(query.toLowerCase())
+    );
+  });
   return (
     <main className="inner-page library-page">
       <section className="library-hero policy-hero">
@@ -106,10 +113,6 @@ export default function PoliciesPage() {
           </button>
         </div>
       )}
-      <p className="data-disclaimer">
-        Policy summaries are illustrative and may not reflect current law. Refer to official
-        gazettes and government publications for authoritative text.
-      </p>
       {detail && (
         <div className="modal-backdrop" role="presentation" onClick={() => setDetail(null)}>
           <section

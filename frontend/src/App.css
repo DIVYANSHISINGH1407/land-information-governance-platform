@@ -4666,6 +4666,7 @@ body {
 }
 .project-facts {
   gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
 }
 .project-facts article {
   padding: 25px;

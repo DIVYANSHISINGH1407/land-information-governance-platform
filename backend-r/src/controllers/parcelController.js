@@ -260,6 +260,15 @@ async function getStateLandUseSummary(req, res) {
           recordCount: { $sum: 1 },
           totalArea: { $sum: "$recordedArea" },
           areaUnits: { $addToSet: "$areaUnit" },
+          areaRecords: {
+            $sum: {
+              $cond: [
+                { $and: [{ $ne: ["$areaUnit", null] }, { $ne: ["$areaUnit", ""] }] },
+                1,
+                0,
+              ],
+            },
+          },
         },
       },
     ]),
@@ -272,6 +281,15 @@ async function getStateLandUseSummary(req, res) {
               recordCount: { $sum: 1 },
               totalArea: { $sum: "$recordedArea" },
               areaUnits: { $addToSet: "$areaUnit" },
+              areaRecords: {
+                $sum: {
+                  $cond: [
+                    { $and: [{ $ne: ["$areaUnit", null] }, { $ne: ["$areaUnit", ""] }] },
+                    1,
+                    0,
+                  ],
+                },
+              },
             },
           },
         ])
@@ -284,12 +302,15 @@ async function getStateLandUseSummary(req, res) {
     const current = categoriesByName.get(name) || {
       landUse: name,
       recordCount: 0,
-      recordedArea: [],
+      areaByUnit: {},
+      areaDataComplete: true,
     };
     current.recordCount += group.recordCount;
     const units = group.areaUnits.filter(Boolean);
-    if (units.length === 1) {
-      current.recordedArea.push({ area: group.totalArea, unit: units[0] });
+    if (units.length === 1 && group.areaRecords === group.recordCount) {
+      current.areaByUnit[units[0]] = (current.areaByUnit[units[0]] || 0) + group.totalArea;
+    } else {
+      current.areaDataComplete = false;
     }
     categoriesByName.set(name, current);
   }
@@ -298,9 +319,30 @@ async function getStateLandUseSummary(req, res) {
     first.landUse.localeCompare(second.landUse),
   );
   const totalRecords = categories.reduce((sum, category) => sum + category.recordCount, 0);
+  const areaUnits = new Set(
+    categories.flatMap((category) => Object.keys(category.areaByUnit)),
+  );
+  const areaUnit = areaUnits.size === 1 ? [...areaUnits][0] : null;
+  const areaAvailable = Boolean(
+    areaUnit &&
+      categories.length > 0 &&
+      categories.every(
+        (category) =>
+          category.areaDataComplete &&
+          Object.keys(category.areaByUnit).length === 1 &&
+          Number.isFinite(category.areaByUnit[areaUnit]),
+      ),
+  );
+  const totalArea = areaAvailable
+    ? categories.reduce((sum, category) => sum + category.areaByUnit[areaUnit], 0)
+    : null;
   const data = categories.map((category) => ({
-    ...category,
-    share: totalRecords ? Number(((category.recordCount / totalRecords) * 100).toFixed(1)) : 0,
+    landUse: category.landUse,
+    recordCount: category.recordCount,
+    recordedArea: areaAvailable ? category.areaByUnit[areaUnit] : null,
+    share: areaAvailable && totalArea > 0
+      ? Number(((category.areaByUnit[areaUnit] / totalArea) * 100).toFixed(1))
+      : 0,
   }));
 
   return res.json({
@@ -308,8 +350,11 @@ async function getStateLandUseSummary(req, res) {
     message: "State land-use summary loaded from parcel records.",
     data,
     totalRecords,
+    totalArea,
+    areaUnit,
+    areaAvailable: areaAvailable && totalArea > 0,
     state: stateName,
-    basis: "record_count",
+    basis: "recorded_area",
   });
 }
 
