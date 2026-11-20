@@ -1,4 +1,5 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const express = require("express");
 const cors = require("cors");
@@ -8,13 +9,19 @@ const districtRoutes = require("./routes/districtRoutes");
 const tehsilRoutes = require("./routes/tehsilRoutes");
 const villageRoutes = require("./routes/villageRoutes");
 const parcelRoutes = require("./routes/parcelRoutes");
+const authRoutes = require("./routes/authRoutes");
 const notFoundMiddleware = require("./middleware/notFoundMiddleware");
 const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
 
-app.use(cors());
+const allowedOrigins = (process.env.CLIENT_ORIGIN ||
+  "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174")
+  .split(",")
+  .map((origin) => origin.trim());
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use((req, res, next) => {
   if (
@@ -39,11 +46,16 @@ app.use("/api/districts", districtRoutes);
 app.use("/api/tehsils", tehsilRoutes);
 app.use("/api/villages", villageRoutes);
 app.use("/api/parcels", parcelRoutes);
+app.use("/api/auth", authRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
 async function startServer() {
+  if (!process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET is missing from backend-r/.env.");
+  }
+
   await connectDatabase();
 
   const server = await new Promise((resolve, reject) => {

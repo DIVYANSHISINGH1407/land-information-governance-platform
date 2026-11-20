@@ -41,14 +41,14 @@ export default function App() {
           }
         />
         <Route
-            path="/explore"
-            element={
-                <ProtectedRoute>
-                    <SiteLayout>
-                        <ExplorePage />
-                    </SiteLayout>
-                </ProtectedRoute>
-            }
+          path="/explore"
+          element={
+            <ProtectedRoute>
+              <SiteLayout>
+                <ExplorePage />
+              </SiteLayout>
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/explore/parcels/:parcelId"
@@ -61,9 +61,11 @@ export default function App() {
         <Route
           path="/research"
           element={
-            <SiteLayout>
-              <ResearchPage />
-            </SiteLayout>
+            <ProtectedRoute>
+              <SiteLayout>
+                <ResearchPage />
+              </SiteLayout>
+            </ProtectedRoute>
           }
         />
         <Route
